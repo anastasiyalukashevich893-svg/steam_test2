@@ -1,0 +1,35 @@
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# Файлы IDE
+.idea/
+.vscode/
+*.iml
+
+# Файлы Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Логи и отчеты
+*.log
+*.html
+report.html
+
+# Скриншоты ошибок
+error_*.png
+screenshot_*.png
+
+# Временные файлы
+*.tmp
+*.bak
+
+# Файлы с паролями
+.env
+secrets.py
