@@ -1,4 +1,0 @@
-selenium==4.41.0
-pytest==9.0.2
-pytest-html==4.2.0
-faker==40.11.0
