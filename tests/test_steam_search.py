@@ -28,7 +28,7 @@ class TestSteamSearch:
     def test_search_for_games(self, home_page, game_data, language):
         game_name = game_data["name"]
         required_count = game_data["count"]
-        home_page.browser.get(home_page.url)
+        home_page.driver.get(home_page.URL)
         home_page.wait_for_page_load()
         home_page.search(game_name)
         search_page = home_page.click_search_button()
