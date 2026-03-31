@@ -1,46 +1,39 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
-
+from selenium.common.exceptions import WebDriverException, SessionNotCreatedException
+from utils.config import ConfigReader
 
 
 class BrowserSingleton:
-    _instance = None
-    _driver = None
+    _drivers = {}
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
-    def get_driver(self, language):
-        if self._driver is None:
-            chrome_options = Options()
-            chrome_options.add_argument("--window-size=1920x1080")
-
-            if language == 'russian':
-                chrome_options.add_argument("--lang=ru")
-                chrome_options.add_argument("--accept-lang=ru")
-            else:
-                chrome_options.add_argument("--lang=en")
-                chrome_options.add_argument("--accept-lang=en")
-
-            self._driver = webdriver.Chrome(options=chrome_options)
-            self._driver.implicitly_wait(10)
-            self._current_language = language
-
-
-        elif self._current_language != language:
-            self.quit_driver()
-            return self.get_driver(language)
-
-        return self._driver
-
-    def quit_driver(self):
-        if self._driver is not None:
+    @classmethod
+    def get_driver(cls, language: str = 'en'):
+        if language not in cls._drivers:
             try:
-                self._driver.quit()
-            except:
-                pass
-            self._driver = None
-            self._current_language = None
+                cls._drivers[language] = cls._create_driver(language)
+            except (SessionNotCreatedException, WebDriverException) as e:
+                print(f"Критическая ошибка при запуске браузера ({language}): {e}")
+                raise
+        return cls._drivers[language]
+
+    @classmethod
+    def _create_driver(cls, language: str):
+        config = ConfigReader.get_config()
+        options = Options()
+        options.add_argument(config.get_window_size())
+
+        options.add_argument(f"--lang={language}")
+        options.add_experimental_option('prefs', {'intl.accept_languages': language})
+
+        driver = webdriver.Chrome(options=options)
+        return driver
+
+    @classmethod
+    def quit_all_drivers(cls):
+        for lang in list(cls._drivers.keys()):
+            driver = cls._drivers.pop(lang)
+            try:
+                driver.quit()
+            except WebDriverException as e:
+                print(f"Ошибка WebDriver при закрытии сессии {lang}: {e.msg}")

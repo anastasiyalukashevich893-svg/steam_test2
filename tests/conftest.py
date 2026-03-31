@@ -4,17 +4,21 @@ from pages.home_page import HomePage
 from data.test_data import TestData
 
 
-@pytest.fixture(params=TestData.LANGUAGE)
+@pytest.fixture(scope="session", autouse=True)
+def browser_cleanup():
+    yield
+    BrowserSingleton.quit_all_drivers()
+
+
+@pytest.fixture(params=TestData.LANGUAGES)
 def language(request):
     return request.param
 
 
 @pytest.fixture
 def browser(language):
-    browser_singleton = BrowserSingleton()
-    driver = browser_singleton.get_driver(language)
+    driver = BrowserSingleton.get_driver(language)
     yield driver
-    browser_singleton.quit_driver()
 
 
 @pytest.fixture

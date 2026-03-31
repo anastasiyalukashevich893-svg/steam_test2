@@ -1,5 +1,7 @@
-class TestData:
+from utils.config import ConfigReader
 
-    LANGUAGE = ['english', 'russian']
+
+class TestData:
+    LANGUAGES = ConfigReader.get_config().language
     GAMES = [{"name": "The Witcher", "count": 10},
-        {"name": "Fallout", "count": 20}]
+             {"name": "Fallout", "count": 20}]
